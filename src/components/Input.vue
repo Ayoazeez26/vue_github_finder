@@ -1,6 +1,7 @@
 <template>
-  <div class="mt-10 w-11/12 mx-auto">
-    <div class="input border rounded-md p-6 mb-10">
+  <div class="w-11/12 mx-auto">
+  <div v-show="showMessage" class="absolute top-0 right-0 w-full md:w-2/5 bg-red-400 text-white font-semibold pl-5 flex items-center h-10">User not found!</div>
+    <div class="input border rounded-md p-6 my-10">
       <h1 class="text-3xl md:text-4xl font-bold">Search Github Users</h1>
       <p class="text-lg md:text-2xl text-gray-300">Enter a username to fetch a user profile and repos</p>
       <input
@@ -12,6 +13,7 @@
       >
     </div>
     <profile
+      v-if="repoName"
       :user_avatar_url="user_avatar_url"
       :user_html_url="user_html_url"
       :user_public_repos="user_public_repos"
@@ -24,7 +26,7 @@
       :user_created_at="user_created_at"
     />
 
-    <div class="mb-10">
+    <div v-if="repoName" class="mb-10">
       <div class="show-repos">
         <h2 class="text-3xl mb-3 font-bold">Latest Repos</h2>
         <div
@@ -57,44 +59,52 @@ export default {
   name: 'Input',
   data() {
     return {
-      repoName: '',
+      repoName: null,
       user_avatar_url: '',
       user_html_url: '',
       user_public_repos: 0,
       user_public_gists: 0,
       user_followers: 0,
       user_following: 0,
-      user_company: '',
+      user_company: null,
       user_blog: '',
       user_location: '',
       user_created_at: '',
       repos: [],
+      showMessage: false,
+      loading: false
     }
   },
   methods: {
     checkUser() {
-      const client_id = '2b3af783db9be3a2c556';
-      const client_secret = '117f4ae71f03a0f966e0e6fc4bb6e1bc3413405d';
-      const repos_count = 5;
-      const repos_sort = 'created: asc';
+      if(this.repoName) {
+        const client_id = '2b3af783db9be3a2c556';
+        const client_secret = '117f4ae71f03a0f966e0e6fc4bb6e1bc3413405d';
+        const repos_count = 5;
+        const repos_sort = 'created: asc';
 
-      axios
-        .get(`https://api.github.com/users/${this.repoName}?client_id=${client_id}&client_secret=${client_secret}`)
-        .then((res) => {
-          console.log(res)
-          this.showProfile(res.data)
-        }).catch((err) => {
-          console.log(err)
-        });
+        axios
+          .get(`https://api.github.com/users/${this.repoName}?client_id=${client_id}&client_secret=${client_secret}`)
+          .then((res) => {
+            console.log(res.data)
+            this.showProfile(res.data)
+          }).catch((err) => {
+            console.log(err)
+            setTimeout(() => {
+              this.showErr();
+            }, 2000);
+            this.showMessage = !this.showMessage;
+          });
 
-      axios
-        .get(`https://api.github.com/users/${this.repoName}/repos?per_page=${repos_count}&sort=${repos_sort}client_id=${client_id}&client_secret=${client_secret}`)
-        .then((res) => {
-          console.log(res)
-          this.repos = [...res.data];
-        }).catch((err) => {
-          console.log(err)
-        });
+        axios
+          .get(`https://api.github.com/users/${this.repoName}/repos?per_page=${repos_count}&sort=${repos_sort}client_id=${client_id}&client_secret=${client_secret}`)
+          .then((res) => {
+            // console.log(res)
+            this.repos = [...res.data];
+          }).catch((err) => {
+            console.log(err)
+          });
+      }
     },
     showProfile(user) {
       this.user_avatar_url = user.avatar_url;
@@ -107,6 +117,9 @@ export default {
       this.user_blog = user.blog;
       this.user_location = user.location;
       this.user_created_at = user.created_at;
+    },
+    showErr() {
+      this.showMessage = !this.showMessage;
     }
   }
 

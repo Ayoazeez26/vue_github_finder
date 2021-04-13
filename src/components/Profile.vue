@@ -6,7 +6,7 @@
         <a :href="user_html_url" target="_blank" class="bg-blue-400 text-white p-3 rounded-2xl text-center hover:bg-blue-500 hover:shadow-md pointer">View Profile</a>
       </div>
       <div class="w-full md:w-3/4">
-        <div class="badges flex flex-col md:flex-row md:space-x-3 space-y-3 md:space-y 0">
+        <div class="badges flex flex-col md:flex-row md:space-x-3 space-y-3 md:space-y-0">
           <p class="bg-blue-400 rounded-md text-white px-3 py-1 text-xs">Public Repos: {{user_public_repos}}</p>
           <p class="bg-gray-400 rounded-md text-white px-3 py-1 text-xs">Public Gists: {{user_public_gists}}</p>
           <p class="bg-green-400 rounded-md text-white px-3 py-1 text-xs">Followers: {{user_followers}}</p>
